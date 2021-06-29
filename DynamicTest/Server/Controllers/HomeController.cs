@@ -17,13 +17,13 @@ namespace DynamicTest.Server.Controllers
         {
             using StreamReader r = new StreamReader("test.json");
             string json = r.ReadToEnd();
-            var dictionary = JsonConvert.DeserializeObject<IDictionary<string, object>>(json);
+            var jsonDictionary = JsonConvert.DeserializeObject<Dictionary<string, dynamic>>(json);
+            var dictionary = new Dictionary<string, Dictionary<string,string>>();
 
             foreach (var itemGroup in dictionary)
             {
-                foreach (var item in itemGroup.Value)
-                {
-                }
+                var items = JsonConvert.DeserializeObject<Dictionary<string, string>>(itemGroup.Value.ToString());
+                dictionary.Add(itemGroup.Key, items);
             }
 
             return null;
