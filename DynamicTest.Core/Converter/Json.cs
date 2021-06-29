@@ -1,11 +1,7 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Json;
+using Newtonsoft.Json;
 
 namespace DynamicTest.Core.Converter
 {
@@ -13,7 +9,7 @@ namespace DynamicTest.Core.Converter
     {
         private static List<object> RecursiveArrayConverter(string json)
         {
-            var jsonObj = JsonConvert.DeserializeObject<List<dynamic>>(json);
+            var jsonObj = JsonConvert.DeserializeObject<List<dynamic>>(json) ?? new List<dynamic>();
             var list = new List<object>();
             foreach (var item in jsonObj)
             {
@@ -22,21 +18,26 @@ namespace DynamicTest.Core.Converter
                 else if (StringIsJsonObject(itemString)) list.Add(RecursiveObjectConverter(item.ToString()));
                 else list.Add(RecursiveArrayConverter(item.ToString()));
             }
+
             return list;
         }
+
         private static Dictionary<string, object> RecursiveObjectConverter(string json)
         {
-            var jsonObj = JsonConvert.DeserializeObject<Dictionary<string, object>>(json);
+            var jsonObj = JsonConvert.DeserializeObject<Dictionary<string, object>>(json) ??
+                          new Dictionary<string, object>();
             var dictionary = new Dictionary<string, object>();
-            foreach (var item in jsonObj)
+            foreach (var (key, value) in jsonObj)
             {
-                var itemString = item.Value.ToString();
-                if (!StringIsValidJson(itemString)) dictionary.Add(item.Key, itemString);
-                else if (StringIsJsonObject(itemString)) dictionary.Add(item.Key, RecursiveObjectConverter(itemString));
-                else dictionary.Add(item.Key, RecursiveArrayConverter(itemString));
+                var itemString = value.ToString();
+                if (!StringIsValidJson(itemString)) dictionary.Add(key, itemString);
+                else if (StringIsJsonObject(itemString)) dictionary.Add(key, RecursiveObjectConverter(itemString));
+                else dictionary.Add(key, RecursiveArrayConverter(itemString));
             }
+
             return dictionary;
         }
+
         private static bool StringIsJsonObject(string jsonString)
         {
             try
@@ -49,17 +50,15 @@ namespace DynamicTest.Core.Converter
                 return false;
             }
         }
+
         private static bool StringIsValidJson(string jsonString)
         {
             try
             {
-                if ((jsonString.StartsWith("{") && jsonString.EndsWith("}")) || //For object
-    (jsonString.StartsWith("[") && jsonString.EndsWith("]"))) //For array
-                {
-                    JsonValue.Parse(jsonString);
-                    return true;
-                }
-                return false;
+                if ((!jsonString.StartsWith("{") || !jsonString.EndsWith("}")) &&
+                    (!jsonString.StartsWith("[") || !jsonString.EndsWith("]"))) return false;
+                JsonValue.Parse(jsonString);
+                return true;
             }
             catch (Exception)
             {
@@ -69,11 +68,9 @@ namespace DynamicTest.Core.Converter
 
         public static object ConvertJsonStringToObject(string jsonString)
         {
-            object obj = jsonString;
-            if (!StringIsValidJson(jsonString)) return obj;
-            if (StringIsJsonObject(jsonString)) obj = RecursiveObjectConverter(jsonString);
-            else obj = RecursiveArrayConverter(jsonString);
-            return obj;
+            if (!StringIsValidJson(jsonString)) return new object();
+            if (StringIsJsonObject(jsonString)) return RecursiveObjectConverter(jsonString);
+            return RecursiveArrayConverter(jsonString);
         }
     }
 }
