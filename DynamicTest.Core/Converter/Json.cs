@@ -69,16 +69,10 @@ namespace DynamicTest.Core.Converter
 
         public static object ConvertJsonStringToObject(string jsonString)
         {
-            var obj = new object();
-            if (StringIsJsonObject(jsonString))
-            {
-                obj = RecursiveObjectConverter(jsonString);
-            }
-            else
-            {
-                obj = RecursiveArrayConverter(jsonString);
-            }
-
+            object obj = jsonString;
+            if (!StringIsValidJson(jsonString)) return obj;
+            if (StringIsJsonObject(jsonString)) obj = RecursiveObjectConverter(jsonString);
+            else obj = RecursiveArrayConverter(jsonString);
             return obj;
         }
     }
