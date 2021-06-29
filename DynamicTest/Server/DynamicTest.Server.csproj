@@ -10,6 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\DynamicTest.Core\DynamicTest.Core.csproj" />
     <ProjectReference Include="..\Client\DynamicTest.Client.csproj" />
     <ProjectReference Include="..\Shared\DynamicTest.Shared.csproj" />
   </ItemGroup>
