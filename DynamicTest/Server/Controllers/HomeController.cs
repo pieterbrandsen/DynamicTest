@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DynamicTest.Core.Converter;
+using Newtonsoft.Json.Linq;
 
 namespace DynamicTest.Server.Controllers
 {
@@ -18,7 +19,7 @@ namespace DynamicTest.Server.Controllers
         {
             using StreamReader r = new StreamReader("test.json");
             string json = r.ReadToEnd();
-            var obj = Json.ConvertJsonStringToObject(json);
+            var obj = Json.ConvertJsonStringToObject<JObject>(json);
 
             return null;
         }

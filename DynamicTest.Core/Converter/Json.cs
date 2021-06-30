@@ -1,71 +1,66 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Json;
+using System.Linq;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace DynamicTest.Core.Converter
 {
     public static class Json
     {
-        private static List<object> RecursiveArrayConverter(string json)
-        {
-            var jsonObj = JsonConvert.DeserializeObject<List<dynamic>>(json) ?? new List<dynamic>();
-            var list = new List<object>();
-            foreach (var item in jsonObj)
-            {
-                var itemString = item.ToString();
-                if (StringIsJsonObject(itemString)) list.Add(RecursiveObjectConverter(itemString));
-                else if (StringIsJsonArray(itemString)) list.Add(RecursiveArrayConverter(itemString));
-                else list.Add(itemString);
-            }
+         /*private static List<object> RecursiveArrayConverter(dynamic obj)
+         {
+             var list = new List<object>();
+             foreach (var item in obj)
+             {
+                 list.Add(ObjectIsJsonObject(item)
+                     ? RecursiveObjectConverter(item)
+                     : ObjectIsJsonArray(item)
+                         ? RecursiveArrayConverter(item)
+                         : item
+                 );
+             }
 
-            return list;
-        }
+             return list;
+         }
 
-        private static Dictionary<string, object> RecursiveObjectConverter(string json)
-        {
-            var jsonObj = JsonConvert.DeserializeObject<Dictionary<string, object>>(json) ??
-                          new Dictionary<string, object>();
-            var dictionary = new Dictionary<string, object>();
-            foreach (var (key, value) in jsonObj)
-            {
-                var itemString = value.ToString();
-                if (StringIsJsonObject(itemString)) dictionary.Add(key,RecursiveObjectConverter(itemString));
-                else if (StringIsJsonArray(itemString)) dictionary.Add(key, RecursiveArrayConverter(itemString));
-                else dictionary.Add(key, itemString);
-            }
+         private static Dictionary<string, object> RecursiveObjectConverter(dynamic obj)
+         {
+             var dictionary = new Dictionary<string, object>();
+             foreach (var (key, value) in obj)
+             {
+                 dictionary.Add(key, ObjectIsJsonObject(value)
+                     ? RecursiveObjectConverter(value)
+                     : ObjectIsJsonArray(value)
+                         ? RecursiveArrayConverter(value)
+                         : value
+                 );
+             }
 
-            return dictionary;
-        }
+             return dictionary;
+         }
+         */
+         public static bool ObjectIsJsonObject(object obj)
+         {
+             return obj.GetType() == typeof(JObject);
+         }
+         public static bool ObjectIsJsonArray(object obj)
+         {
+             return obj.GetType() == typeof(JArray);
+         }
 
-        private static bool StringIsJsonObject(string jsonString)
-        {
-            return jsonString.StartsWith("{") && jsonString.EndsWith("}");
-        }
-        private static bool StringIsJsonArray(string jsonString)
-        {
-            return jsonString.StartsWith("[") && jsonString.EndsWith("]");
-        }
-
-        private static bool StringIsValidJson(string jsonString)
+        public static T ConvertJsonStringToObject<T>(string jsonString)
         {
             try
             {
-                if (!StringIsJsonArray(jsonString) && !StringIsJsonObject(jsonString)) return false;
-                JsonValue.Parse(jsonString);
-                return true;
+                var obj = JsonConvert.DeserializeObject<T>(jsonString);
+                return obj;
             }
             catch (Exception)
             {
-                return false;
+                return default;
             }
-        }
-
-        public static object ConvertJsonStringToObject(string jsonString)
-        {
-            if (!StringIsValidJson(jsonString)) return new object();
-            if (StringIsJsonObject(jsonString)) return RecursiveObjectConverter(jsonString);
-            return RecursiveArrayConverter(jsonString);
         }
     }
 }
