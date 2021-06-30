@@ -14,9 +14,9 @@ namespace DynamicTest.Core.Converter
             foreach (var item in jsonObj)
             {
                 var itemString = item.ToString();
-                if (!StringIsValidJson(itemString)) list.Add(item.ToString());
-                else if (StringIsJsonObject(itemString)) list.Add(RecursiveObjectConverter(item.ToString()));
-                else list.Add(RecursiveArrayConverter(item.ToString()));
+                if (StringIsJsonObject(itemString)) list.Add(RecursiveObjectConverter(itemString));
+                else if (StringIsJsonArray(itemString)) list.Add(RecursiveArrayConverter(itemString));
+                else list.Add(itemString);
             }
 
             return list;
@@ -30,9 +30,9 @@ namespace DynamicTest.Core.Converter
             foreach (var (key, value) in jsonObj)
             {
                 var itemString = value.ToString();
-                if (!StringIsValidJson(itemString)) dictionary.Add(key, itemString);
-                else if (StringIsJsonObject(itemString)) dictionary.Add(key, RecursiveObjectConverter(itemString));
-                else dictionary.Add(key, RecursiveArrayConverter(itemString));
+                if (StringIsJsonObject(itemString)) dictionary.Add(key,RecursiveObjectConverter(itemString));
+                else if (StringIsJsonArray(itemString)) dictionary.Add(key, RecursiveArrayConverter(itemString));
+                else dictionary.Add(key, itemString);
             }
 
             return dictionary;
@@ -40,23 +40,18 @@ namespace DynamicTest.Core.Converter
 
         private static bool StringIsJsonObject(string jsonString)
         {
-            try
-            {
-                JsonConvert.DeserializeObject<Dictionary<string, object>>(jsonString);
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
+            return jsonString.StartsWith("{") && jsonString.EndsWith("}");
+        }
+        private static bool StringIsJsonArray(string jsonString)
+        {
+            return jsonString.StartsWith("[") && jsonString.EndsWith("]");
         }
 
         private static bool StringIsValidJson(string jsonString)
         {
             try
             {
-                if ((!jsonString.StartsWith("{") || !jsonString.EndsWith("}")) &&
-                    (!jsonString.StartsWith("[") || !jsonString.EndsWith("]"))) return false;
+                if (!StringIsJsonArray(jsonString) && !StringIsJsonObject(jsonString)) return false;
                 JsonValue.Parse(jsonString);
                 return true;
             }
