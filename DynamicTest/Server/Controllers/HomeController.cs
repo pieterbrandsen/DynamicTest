@@ -19,7 +19,7 @@ namespace DynamicTest.Server.Controllers
         {
             using StreamReader r = new StreamReader("test.json");
             string json = r.ReadToEnd();
-            var obj = Json.ConvertJsonStringToObject<JObject>(json);
+            var obj = Json.ConvertJsonStringToObject<JContainer>(json);
 
             return null;
         }

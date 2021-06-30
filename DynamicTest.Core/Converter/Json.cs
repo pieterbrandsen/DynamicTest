@@ -50,7 +50,7 @@ namespace DynamicTest.Core.Converter
              return obj.GetType() == typeof(JArray);
          }
 
-        public static T ConvertJsonStringToObject<T>(string jsonString)
+        public static T ConvertJsonStringToObject<T>(string jsonString) where T: JContainer
         {
             try
             {
