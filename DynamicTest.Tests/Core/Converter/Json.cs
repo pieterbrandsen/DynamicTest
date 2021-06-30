@@ -8,33 +8,35 @@ namespace DynamicTest.Tests.Core.Converter
 {
     public class JsonTest
     {
+        private readonly JObject _jObject = new ();
+        private readonly JArray _jArray = new ();
         [Fact]
         public void IsObjectJObject()
         {
-            var jObject = new JObject();
-            Assert.True(Json.ObjectIsJsonObject(jObject));
+            Assert.True(Json.ObjectIsJsonObject(_jObject));
 
-            var jArray = new JArray();
-            Assert.False(Json.ObjectIsJsonObject(jArray));
+            Assert.False(Json.ObjectIsJsonObject(_jArray));
         }
         
         [Fact]
         public void IsArrayJArray()
         {
-            var jArray = new JArray();
-            Assert.True(Json.ObjectIsJsonArray(jArray));
+            Assert.True(Json.ObjectIsJsonArray(_jArray));
             
-            var jObject = new JObject();
-            Assert.False(Json.ObjectIsJsonArray(jObject));
+            Assert.False(Json.ObjectIsJsonArray(_jObject));
         }
         
         [Fact]
         public void TryToConvertJsonArray()
         {
-            var json = JsonArray.GetJson;
-            var jsonObject = Json.ConvertJsonStringToObject<JArray>(json);
-            Assert.NotNull(jsonObject);
-            Assert.IsType<JArray>(jsonObject);
+            foreach (var json in JsonArrayGenerator.GetJsonArrayList)
+            {
+                Assert.NotEmpty(json);
+                
+                var jsonObject = Json.ConvertJsonStringToObject<JArray>(json);
+                Assert.NotNull(jsonObject);
+                Assert.IsType<JArray>(jsonObject); 
+            }
         }
 
         [Fact]
@@ -44,6 +46,32 @@ namespace DynamicTest.Tests.Core.Converter
             var jsonObject = Json.ConvertJsonStringToObject<JObject>(json);
             Assert.NotNull(jsonObject);
             Assert.IsType<JObject>(jsonObject);
+        }        
+
+        [Fact]
+        public void TryToConvertMultipleJsonObject()
+        {
+            var json = JsonObject.GetJson;
+            var jsonObject = Json.ConvertJsonStringToObject<JObject>(json);
+            Assert.NotNull(jsonObject);
+            Assert.IsType<JObject>(jsonObject);
+        }
+        
+        [Fact]
+        public void TryToConvertMultipleJsonArrays()
+        {
+            var jsonArray = JsonArrayGenerator.GetJsonArrayList;
+            for (var i = 0; i < jsonArray.Length -1; i++)
+            {
+                var json = jsonArray[i];
+                var json2 = jsonArray[i+1];
+                Assert.NotEmpty(json);
+                Assert.NotEmpty(json2);
+                
+                var jsonObject = Json.ConvertJsonStringToObject<JArray>(json,json2);
+                Assert.NotNull(jsonObject);
+                Assert.IsType<JArray>(jsonObject);
+            }
         }
 
         [Fact]
@@ -54,7 +82,7 @@ namespace DynamicTest.Tests.Core.Converter
             Assert.Null(jsonObject);
 
             var json2 = JsonNonValid.GetJson2;
-            var jsonObject2 = Json.ConvertJsonStringToObject<JObject>(json2);
+            var jsonObject2 = Json.ConvertJsonStringToObject<JObject>(json,json2);
             Assert.Null(jsonObject2);
         }
     }
