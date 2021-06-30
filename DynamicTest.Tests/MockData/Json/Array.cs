@@ -17,9 +17,9 @@ namespace DynamicTest.Tests.MockData.Json
             Array3 = new object[] {new{A=0},new{B=1},new{C=2}};
         }
 
-        public static string GetJsonArray => JsonConvert.SerializeObject(Array);
-        public static string GetJsonArray2 => JsonConvert.SerializeObject(Array2);
-        public static string GetJsonArray3 => JsonConvert.SerializeObject(Array3);
+        private static string GetJsonArray => JsonConvert.SerializeObject(Array);
+        private static string GetJsonArray2 => JsonConvert.SerializeObject(Array2);
+        private static string GetJsonArray3 => JsonConvert.SerializeObject(Array3);
         public static string[] GetJsonArrayList => new[] {GetJsonArray, GetJsonArray2, GetJsonArray3};
     }
 }
