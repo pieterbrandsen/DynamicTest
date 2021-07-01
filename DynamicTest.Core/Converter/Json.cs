@@ -62,5 +62,22 @@ namespace DynamicTest.Core.Converter
                 return default;
             }
         }
+
+        public static T ConvertJsonStringToObject<T>(string json, string json2) where T : JContainer
+        {
+            try
+            {
+                var obj = JsonConvert.DeserializeObject<T>(json);
+                var obj2 = JsonConvert.DeserializeObject<T>(json2);
+                if (obj2 != null) {
+                    obj?.Merge(obj2);
+                }
+                return obj;
+            }
+            catch (Exception)
+            {
+                return default;
+            }
+        }
     }
 }
