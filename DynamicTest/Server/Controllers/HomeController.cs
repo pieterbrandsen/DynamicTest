@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DynamicTest.Core;
 using DynamicTest.Core.Converter;
 using Newtonsoft.Json.Linq;
 
@@ -17,8 +18,7 @@ namespace DynamicTest.Server.Controllers
         [HttpGet]
         public string Get()
         {
-            using StreamReader r = new StreamReader("test.json");
-            var obj = Json.ConvertJsonStringToObject<JContainer>(r.ReadToEnd());
+            var obj = Json.ConvertJsonStringToObject<JObject>(FileLoader.Json("test"));
 
             return null;
         }
