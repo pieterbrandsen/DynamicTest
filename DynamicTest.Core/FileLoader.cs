@@ -6,7 +6,7 @@ namespace DynamicTest.Core
     {
         public static string Json(string fileLocation)
         {
-            using StreamReader r = new StreamReader($"{fileLocation}.json");
+            using var r = new StreamReader($"{fileLocation}.json");
             return r.ReadToEnd();
         }
     }
