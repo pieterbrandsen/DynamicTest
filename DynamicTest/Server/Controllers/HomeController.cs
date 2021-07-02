@@ -7,24 +7,29 @@ using System.Linq;
 using System.Threading.Tasks;
 using DynamicTest.Core;
 using DynamicTest.Core.Converter;
+using DynamicTest.Core.Helper;
 using Microsoft.AspNetCore.Components.Forms;
 using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Hosting;
 
 namespace DynamicTest.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class HomeController : ControllerBase
     {
         [HttpGet]
-        public async Task<JObject> Get(IBrowserFile file)
+        public IActionResult Get(string fileLocation)
         {
-            var obj = Json.ConvertJsonStringToObject<JObject>(FileLoader.Json("test"));
-
-            await using var stream = file.OpenReadStream(int.MaxValue);
-            using var reader = new StreamReader(stream);
-            var obj2 = Json.ConvertJsonStringToObject<JObject>(await reader.ReadToEndAsync());
-            return obj2;
+            var fileContent = FileReader.Json(fileLocation);
+            var obj2 = Json.ConvertJsonStringToObject<JObject>(fileContent);
+            return Ok(obj2);
         }
+
+        [HttpPost]
+        public IActionResult Post([FromBody] Stream content)
+        {
+            return Ok("Good");
+        } 
     }
 }

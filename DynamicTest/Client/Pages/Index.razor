@@ -1,28 +1,26 @@
 ﻿@page "/"
 @using System.Text
 @using System.IO
+@using DynamicTest.Core.Helper
 @using Newtonsoft.Json.Linq
 @inject HttpClient Http
 
 <h1>Hello, world!</h1>
 
-<InputFile OnChange="@LoadFiles" multiple />
+<InputFile OnChange="@LoadFile" />
+<h1>@AppDomain.CurrentDomain.BaseDirectory</h1>
 
 @code {
+    private string FileLocation { get; set; } = null;
+
     protected override void OnInitialized()
     {
     }
-    private async void LoadFiles(InputFileChangeEventArgs e)
+    private async void LoadFile(InputFileChangeEventArgs e)
     {
-        var fileContents = new List<string>();
-        foreach (var file in e.GetMultipleFiles(2))
-        {
-            await using var stream = file.OpenReadStream(int.MaxValue);
-            using var reader = new StreamReader(stream);
-            fileContents.Add(await reader.ReadToEndAsync());
-            
-            var a = await Http.PostAsJsonAsync($"Home",file);
-
-        }
+        //FileLocation = await FileWriter.Json(e.File);
+        //var a = await Http.GetFromJsonAsync<string>($"api/home?fileLocation={FileLocation}");
+        //var content = await FileReader.Json(e.File);
+        var a = await Http.PostAsJsonAsync<Stream>($"api/home",e.File.OpenReadStream(int.MaxValue));
     }
 }

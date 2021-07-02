@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using DynamicTest.Core.Converter;
 using DynamicTest.Tests.MockData.Json;
 using Newtonsoft.Json.Linq;
@@ -13,17 +14,17 @@ namespace DynamicTest.Tests.Core.Converter
         [Fact]
         public void IsObjectJObject()
         {
-            Assert.True(Json.ObjectIsJsonObject(_jObject));
+            Assert.True(JsonConverter.ObjectIsJsonObject(_jObject));
 
-            Assert.False(Json.ObjectIsJsonObject(_jArray));
+            Assert.False(JsonConverter.ObjectIsJsonObject(_jArray));
         }
         
         [Fact]
         public void IsArrayJArray()
         {
-            Assert.True(Json.ObjectIsJsonArray(_jArray));
+            Assert.True(JsonConverter.ObjectIsJsonArray(_jArray));
             
-            Assert.False(Json.ObjectIsJsonArray(_jObject));
+            Assert.False(JsonConverter.ObjectIsJsonArray(_jObject));
         }
         
         [Fact]
@@ -33,7 +34,7 @@ namespace DynamicTest.Tests.Core.Converter
             {
                 Assert.NotEmpty(json);
                 
-                var jsonObject = Json.ConvertJsonStringToObject<JObject>(json);
+                var jsonObject = JsonConverter.ConvertJsonStringToObject<JObject>(json);
                 Assert.NotNull(jsonObject);
                 Assert.IsType<JObject>(jsonObject); 
             }
@@ -46,7 +47,7 @@ namespace DynamicTest.Tests.Core.Converter
             {
                 Assert.NotEmpty(json);
                 
-                var jsonObject = Json.ConvertJsonStringToObject<JArray>(json);
+                var jsonObject = JsonConverter.ConvertJsonStringToObject<JArray>(json);
                 Assert.NotNull(jsonObject);
                 Assert.IsType<JArray>(jsonObject); 
             }
@@ -63,7 +64,7 @@ namespace DynamicTest.Tests.Core.Converter
                 Assert.NotEmpty(json);
                 Assert.NotEmpty(json2);
                 
-                var jsonObject = Json.ConvertJsonStringToObject<JObject>(json,json2);
+                var jsonObject = JsonConverter.ConvertJsonStringToObject<JObject>(json,json2);
                 Assert.NotNull(jsonObject);
                 Assert.IsType<JObject>(jsonObject);
             }
@@ -80,7 +81,7 @@ namespace DynamicTest.Tests.Core.Converter
                 Assert.NotEmpty(json);
                 Assert.NotEmpty(json2);
                 
-                var jsonObject = Json.ConvertJsonStringToObject<JArray>(json,json2);
+                var jsonObject = JsonConverter.ConvertJsonStringToObject<JArray>(json,json2);
                 Assert.NotNull(jsonObject);
                 Assert.IsType<JArray>(jsonObject);
             }
@@ -93,9 +94,21 @@ namespace DynamicTest.Tests.Core.Converter
             {
                 Assert.NotEmpty(json);
                 
-                var jsonObject = Json.ConvertJsonStringToObject<JArray>(json);
+                var jsonObject = JsonConverter.ConvertJsonStringToObject<JArray>(json);
                 Assert.Null(jsonObject);
             }
+        }
+
+        [Fact]
+        public void TryToConvert2DifferentJsonStringTypes()
+        {
+            var json = JsonArrayGenerator.GetJsonArrayList[0];
+            var json2 = JsonObjectGenerator.GetJsonObjectList[0];
+            Assert.NotEmpty(json);
+            Assert.NotEmpty(json2);
+
+            var jsonObject = JsonConverter.ConvertJsonStringToObject<JArray>(json, json2);
+            Assert.Null(jsonObject);
         }
     }
 }

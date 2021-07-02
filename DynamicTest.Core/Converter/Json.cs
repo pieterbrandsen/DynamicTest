@@ -7,7 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace DynamicTest.Core.Converter
 {
-    public static class Json
+    public static class JsonConverter
     {
          /*private static List<object> RecursiveArrayConverter(dynamic obj)
          {

@@ -7,11 +7,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Tewr.Blazor.FileReader" Version="3.1.0.21158" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\DynamicTest.Core\DynamicTest.Core.csproj" />
-    <ProjectReference Include="..\Client\DynamicTest.Client.csproj" />
     <ProjectReference Include="..\Shared\DynamicTest.Shared.csproj" />
   </ItemGroup>
 
