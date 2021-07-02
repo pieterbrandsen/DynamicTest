@@ -13,14 +13,10 @@ namespace DynamicTest.Core.Helper
         public static async Task<string> Json(IBrowserFile file)
         {
             var fileContent = await FileReader.Json(file);
-            var fileName = $"{RandomStringGenerator.RandomizedString()}.json";
+            var tempPath = Path.GetTempFileName();
+            await File.WriteAllTextAsync(tempPath, fileContent);
 
-            var directoryPath = "./json/";
-            var fullPath = $"{directoryPath}{fileName}";
-            Directory.CreateDirectory(directoryPath);
-            await File.WriteAllTextAsync(fullPath, fileContent);
-
-            return fullPath;
+            return tempPath;
         } 
     }
 }
