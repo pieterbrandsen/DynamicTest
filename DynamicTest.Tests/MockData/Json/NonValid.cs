@@ -16,7 +16,7 @@ namespace DynamicTest.Tests.MockData.Json
             Object3 = "[A: }";
         }
 
-        private static string GetJsonObject=> JsonConvert.SerializeObject(Object);
+        private static string GetJsonObject => JsonConvert.SerializeObject(Object);
         private static string GetJsonObject2 => JsonConvert.SerializeObject(Object2);
         private static string GetJsonObject3 => JsonConvert.SerializeObject(Object3);
         public static string[] GetJsonArrayList => new[] {GetJsonObject, GetJsonObject2, GetJsonObject3};

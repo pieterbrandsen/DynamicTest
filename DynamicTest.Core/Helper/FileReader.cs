@@ -13,6 +13,7 @@ namespace DynamicTest.Core.Helper
             var content = await reader.ReadToEndAsync();
             return content;
         }
+
         public static string Json(string fileLocation)
         {
             var content = File.ReadAllText(fileLocation);

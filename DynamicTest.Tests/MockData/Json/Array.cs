@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
 
 namespace DynamicTest.Tests.MockData.Json
 {
@@ -12,9 +10,9 @@ namespace DynamicTest.Tests.MockData.Json
 
         static JsonArrayGenerator()
         {
-            Array = new[] {0, 1, 2,3,4};
-            Array2 = new[] {new[]{0, 1, 2},new[]{3, 4, 5}};
-            Array3 = new object[] {new{A=0},new{B=1},new{C=2}};
+            Array = new[] {0, 1, 2, 3, 4};
+            Array2 = new[] {new[] {0, 1, 2}, new[] {3, 4, 5}};
+            Array3 = new object[] {new {A = 0}, new {B = 1}, new {C = 2}};
         }
 
         private static string GetJsonArray => JsonConvert.SerializeObject(Array);
