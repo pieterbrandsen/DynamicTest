@@ -1,0 +1,9 @@
+<h3>LoadFolder</h3>
+
+<button @onclick="@(() => OnClick.InvokeAsync("Hello from ChildComponent"))">Click me</button>
+
+@code {
+
+    [Parameter] public EventCallback<string> OnClick { get; set; }
+
+}

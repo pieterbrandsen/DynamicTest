@@ -1,0 +1,285 @@
+@using Newtonsoft.Json.Linq
+@using DynamicTest.Core.Converter
+@using System.Data
+@using Microsoft.AspNetCore.Components.Rendering
+@using Microsoft.Extensions.Primitives
+
+@BuildTable()
+
+@code {
+    [Parameter]
+    public JObject JsonJObject { get; set; }
+
+    private enum ObjectTypes
+    {
+        Value,
+        Object,
+        Array
+        
+    }
+    
+    private ObjectTypes HasObjectOrArrayInObject(JToken obj)
+    {
+        var arrayCount = 0;
+        var objectCount = 0;
+
+        if (JsonConverter.ObjectIsJsonObject(obj))
+        {
+            foreach (var (key,value) in (JObject) obj)
+            {
+                if (JsonConverter.ObjectIsJsonObject(value) && ((JObject) value).Count > 1)
+                {
+                    objectCount++;
+                }
+                else if (JsonConverter.ObjectIsJsonArray(value) && ((JArray) value).Count > 1)
+                {
+                    arrayCount++;
+                }
+            }
+        }
+        else if (JsonConverter.ObjectIsJsonArray(obj))
+        {
+            foreach (var item in (JArray) obj)
+            {
+                if (JsonConverter.ObjectIsJsonObject(item) && ((JObject) item).Count > 1 )
+                {
+                    
+                    objectCount++;
+                }
+                else if (JsonConverter.ObjectIsJsonArray(item) && ((JArray) item).Count > 1)
+                {
+                    arrayCount++;
+                }
+            }
+        }
+        
+        return arrayCount > 0 || objectCount > 0 ? objectCount > arrayCount ? ObjectTypes.Object : ObjectTypes.Array : ObjectTypes.Value;
+    }
+
+    private void LoopThroughObject(JObject obj, RenderTreeBuilder t, int sequence)
+    {
+        if (obj.Count == 0) return;
+
+        t.OpenElement(sequence, "table");
+        t.AddAttribute(sequence, "class", "table table-striped mb-0");
+
+        foreach (var (key,value) in obj)
+        {
+            var hasObjectOrArrayInObj = HasObjectOrArrayInObject(value);
+
+                t.OpenElement(sequence,"thead");
+                t.OpenElement(sequence,"tr");
+                t.OpenElement(sequence,"th");
+                t.AddContent(sequence,key);
+                t.CloseElement();
+                t.CloseElement();
+
+                t.OpenElement(sequence,"tr");
+                var i = 0;
+                foreach (var innerValue in value)
+                {
+                    if (i == 0)
+                    {
+                        t.OpenElement(sequence,"th");
+                        t.AddContent(sequence,"#");
+                        t.CloseElement();
+                        i++;
+                    }
+                    t.OpenElement(sequence,"th");
+                    t.AddContent(sequence,(innerValue as JProperty)?.Name);
+                    t.CloseElement();
+                }
+                t.CloseElement();
+                t.CloseElement();
+
+                
+                // i = 0;
+                // foreach (var innerValue in value)
+                // {
+                //         if (i == 0)
+                //         {
+                //             t.OpenElement(sequence,"th");
+                //             t.AddContent(sequence,i);
+                //             t.CloseElement();
+                //         }
+                //     i++;
+                //         t.OpenElement(sequence,"td");
+                //         t.AddContent(sequence,(innerValue as JProperty)?.Value);
+                //         t.CloseElement();
+                // }
+
+ 
+                t.OpenElement(sequence,"tbody");
+                var valueType = JsonConverter.ObjectIsJsonObject(value) 
+                    ? ObjectTypes.Object 
+                    : JsonConverter.ObjectIsJsonArray(value) 
+                        ? ObjectTypes.Array : ObjectTypes.Value;
+                if (valueType == ObjectTypes.Object)
+                {
+                    t.OpenElement(sequence,"td");
+                    LoopThroughObject(value as JObject, t, sequence);
+                    t.CloseElement();
+                }
+                else if (valueType == ObjectTypes.Array)
+                {
+                    t.OpenElement(sequence,"td");
+                    LoopThroughArray(value as JArray, t, sequence);
+                    t.CloseElement();
+                }
+                else
+                {
+                    t.OpenElement(sequence,"th");
+                    t.AddContent(sequence,key);
+                    t.CloseElement();
+
+                    t.OpenElement(sequence,"td");
+                    t.AddContent(sequence,value);
+                    t.CloseElement();
+                }
+                t.CloseElement();
+                t.CloseElement();
+            }
+        t.CloseElement();
+
+        
+        // if (hasObjectOrArrayInObj == ObjectTypes.Value)
+        // {
+        //     t.OpenElement(sequence, "thead");
+        //     t.OpenElement(sequence, "tr");
+        //
+        //     
+        //     
+        //     
+        //     
+        //     
+        //     
+        //     
+        //     
+        //     var i = 0;
+        //     foreach (var item in obj)
+        //     {
+        //         if (i == 0)
+        //         {
+        //             t.OpenElement(headSequence, "th");
+        //             t.AddContent(headSequence, "#");
+        //             t.CloseElement();
+        //         }
+        //         t.OpenElement(headSequence, "th");
+        //         t.AddContent(headSequence, item.Key);
+        //         t.CloseElement();
+        //         i++;
+        //     }
+        //     
+        //     t.CloseElement();
+        //     t.CloseElement();
+        //     
+        //     t.OpenElement(headSequence, "tbody");
+        //     foreach (var (valuesKey,values) in obj)
+        //     {
+        //         t.OpenElement(headSequence, "tr");
+    //         var valueType = JsonConverter.ObjectIsJsonObject(values) ? ObjectTypes.Object : JsonConverter.ObjectIsJsonArray(values) ? ObjectTypes.Array : ObjectTypes.Value;
+        //
+        //
+        //         if (valueType == ObjectTypes.Object)
+        //         {
+        //             i = 0;
+        //             foreach (var (valueKey,value) in (JObject) values)
+        //             {
+        //                 if (i == 0)
+        //                 {
+        //                     t.OpenElement(sequence, "th");
+        //                     t.AddContent(sequence, valueKey);
+        //                     t.CloseComponent();
+        //                 }
+        //                     t.OpenElement(sequence, "td");
+        //                     t.AddContent(sequence, value);
+        //                     t.CloseComponent();
+        //                 i++;
+        //             }
+        //         }
+        //         t.CloseElement();
+        //     }
+        //     
+        //     t.CloseElement();
+        // }
+        // else
+        // {
+        //     t.OpenElement(headSequence, "thead");
+        //     headSequence += 1;
+        //     t.OpenElement(headSequence, "tr");
+        //     foreach (var (key,value) in obj)
+        //     {
+        //         t.OpenElement(headSequence, "th");
+        //         t.AddContent(headSequence, key);
+        //         t.CloseComponent();
+        //     }
+        //     t.CloseComponent();
+        //     t.CloseComponent();
+        //
+        //     t.OpenElement(headSequence, "tbody");
+        //     t.OpenElement(headSequence, "tr");
+        //     foreach (var (key,value) in obj)
+        //     {
+        //         var valueType = JsonConverter.ObjectIsJsonObject(value) ? ObjectTypes.Object : JsonConverter.ObjectIsJsonArray(value) ? ObjectTypes.Array : ObjectTypes.Value;
+        //
+        //         if (valueType == ObjectTypes.Object && hasObjectOrArrayInObj == ObjectTypes.Object)
+        //         {
+        //             LoopThroughObject(value as JObject, t, sequence);
+        //         }
+        //         else if (valueType == ObjectTypes.Array && hasObjectOrArrayInObj == ObjectTypes.Array)
+        //         {
+        //             LoopThroughArray(value as JArray, t, sequence);
+        //         }
+        //         else
+        //         {
+        //             t.OpenElement(sequence, "td");
+        //             t.AddContent(sequence, value);
+        //             t.CloseComponent();
+        //         }
+        //     }
+        //     t.CloseComponent();
+        // t.CloseComponent();
+        // }
+        // t.CloseComponent();
+    }
+
+    private void LoopThroughArray(JArray array, RenderTreeBuilder t, int sequence)
+    {
+        return;
+        if (array.Count == 0) return;
+
+        sequence += 1;
+        t.OpenElement(sequence, "tr");
+        foreach (var item in array)
+        {
+            if (JsonConverter.ObjectIsJsonObject(item))
+            {
+                LoopThroughObject(item as JObject, t, sequence);
+            }
+            else if (JsonConverter.ObjectIsJsonArray(item))
+            {
+                LoopThroughArray(item as JArray, t, sequence);
+            }
+            else
+            {
+                t.OpenElement(sequence, "td");
+                t.AddContent(sequence,item);
+                t.CloseComponent();
+            }
+        }
+        t.CloseComponent();
+    }
+    
+    private RenderFragment BuildTable()
+    {
+
+        RenderFragment table = t =>
+        {
+            var sequence = 0;
+            t.OpenElement(sequence += 1, "div");
+            LoopThroughObject(JsonJObject, t, sequence);
+            t.CloseElement();
+        };
+        return table;
+    }
+}
