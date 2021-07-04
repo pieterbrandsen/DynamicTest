@@ -1,0 +1,30 @@
+﻿@page "/"
+@using DynamicTest.Core.Helper
+@using Newtonsoft.Json.Linq
+@using DynamicTest.Core.Converter
+@using DynamicTest.Web.Components;
+
+<InputFile OnChange="OnFileInput"/>
+@if (JObject != null)
+{
+    <JsonTableGenerator JsonJObject="@JObject"></JsonTableGenerator>
+}
+@code {
+
+    private JObject JObject { get; set; }
+
+    private async void OnFileInput(InputFileChangeEventArgs e)
+    {
+        var path = await FileWriter.Json(e.File);
+        var content = FileReader.Json(path);
+        var obj = JsonConverter.ConvertJsonStringToObject<JObject>(content);
+        JObject = obj;
+        StateHasChanged();
+    }
+    
+
+
+
+
+
+}

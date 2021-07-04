@@ -1,0 +1,11 @@
+@using Newtonsoft.Json.Linq
+@using DynamicTest.Core.Helper
+@using DynamicTest.Core.Converter
+<h3>LoadFile</h3>
+<InputFile OnChange="OnFileInput"/>
+
+@code {
+
+    [Parameter] public EventCallback<InputFileChangeEventArgs> OnFileInput { get; set; }
+
+}
