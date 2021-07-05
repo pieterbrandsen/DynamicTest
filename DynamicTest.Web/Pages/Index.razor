@@ -3,6 +3,8 @@
 @using Newtonsoft.Json.Linq
 @using DynamicTest.Core.Converter
 @using DynamicTest.Web.Components;
+@using System.ComponentModel
+@using System.Net
 
 <InputFile OnChange="OnFileInput"/>
 @if (JObject != null)
@@ -12,19 +14,14 @@
 @code {
 
     private JObject JObject { get; set; }
+    private string Path { get; set; }
 
     private async void OnFileInput(InputFileChangeEventArgs e)
     {
-        var path = await FileWriter.Json(e.File);
-        var content = FileReader.Json(path);
+        Path = await FileWriter.Json(e.File);
+        var content = FileReader.Json(Path);
         var obj = JsonConverter.ConvertJsonStringToObject<JObject>(content);
         JObject = obj;
         StateHasChanged();
     }
-    
-
-
-
-
-
 }
