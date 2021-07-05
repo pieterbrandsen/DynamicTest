@@ -14,9 +14,9 @@ namespace DynamicTest.Core.Helper
             return content;
         }
 
-        public static string Json(string fileLocation)
+        public static string Json(string path)
         {
-            var content = File.ReadAllText(fileLocation);
+            var content = File.ReadAllText(path);
             return content;
         }
     }
