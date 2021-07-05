@@ -55,7 +55,7 @@
         return arrayCount > 0 || objectCount > 0 ? objectCount > arrayCount ? ObjectTypes.Object : ObjectTypes.Array : ObjectTypes.Value;
     }
 
-    private void LoopThroughObject(JToken obj, RenderTreeBuilder t, int sequence)
+    private void LoopThroughObject(JToken obj, RenderTreeBuilder t, int sequence, string objKey = null)
     {
         if (!obj.HasValues) return;
 
@@ -110,7 +110,7 @@
                 }
                 else
                 {
-                    LoopThroughObject(value, t, sequence);
+                    LoopThroughObject(value, t, sequence, key);
                 }
 
                 t.CloseElement();
@@ -125,20 +125,29 @@
             t.AddContent(sequence, "#");
             t.CloseElement();
             var i = 0;
-            if (obj?.First != null)
+
+            valueType = JsonConverter.ObjectIsJsonObject(obj)
+                ? ObjectTypes.Object
+                : JsonConverter.ObjectIsJsonArray(obj)
+                    ? ObjectTypes.Array : ObjectTypes.Value;
+
+            if (valueType == ObjectTypes.Object)
+            {
+                if (obj?.First != null)
                 foreach (var item in obj.First)
                 {
-                    // valueType = JsonConverter.ObjectIsJsonObject(item)
-                    //     ? ObjectTypes.Object
-                    //     : JsonConverter.ObjectIsJsonArray(item)
-                    //         ? ObjectTypes.Array : ObjectTypes.Value;
-                    // if (valueType == ObjectTypes.Object)
-                    // {
-                        t.OpenElement(sequence, "th");
-                        t.AddContent(sequence, (item as JProperty)?.Name);
-                        t.CloseElement();
-                    //}
+                    
+                    t.OpenElement(sequence, "th");
+                    t.AddContent(sequence, (item as JProperty)?.Name);
+                    t.CloseElement();
                 }
+            }
+            else if (valueType == ObjectTypes.Array)
+            {
+                t.OpenElement(sequence, "th");
+                t.AddContent(sequence, objKey);
+                t.CloseElement();
+            }
             t.CloseElement();
             t.CloseElement();
 
