@@ -190,6 +190,7 @@
         {
             var sequence = 0;
             t.OpenElement(sequence += 1, "div");
+            t.AddAttribute(sequence,"class", "table-responsive table-hover table-sm");
             LoopThroughObject(JsonJObject, t, sequence);
             t.CloseElement();
         };
