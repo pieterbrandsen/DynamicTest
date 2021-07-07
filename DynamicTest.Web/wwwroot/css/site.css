@@ -48,3 +48,10 @@ a, .btn-link {
         right: 0.75rem;
         top: 0.5rem;
     }
+
+    
+    .sf-license-warning {
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+    }
