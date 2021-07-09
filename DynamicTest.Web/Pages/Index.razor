@@ -6,34 +6,13 @@
 @using System.ComponentModel
 @using System.Dynamic
 @using System.Net
+@using DynamicTest.Core.Models
 @using Microsoft.AspNetCore.Components.Rendering
 
-    @BuildTable()
-
+    <TableGenerator Data="@Orders"></TableGenerator>
 
 <InputFile OnChange="OnFileInput"/>
-@* @if (TableData != null) *@
-@* { *@
-@* *@
-@* } *@
-@code {
-
-    private JObject TableData { get; set; }
-    private string Path { get; set; }
-
-    private async void OnFileInput(InputFileChangeEventArgs e)
-    {
-        Path = await FileWriter.Json(e.File);
-        var content = FileReader.Json(Path);
-        var obj = JsonConverter.ConvertJsonStringToObject<JObject>(content);
-        TableData = obj;
-        StateHasChanged();
-    }
-    
-        private RenderFragment Table { get; set; }
-
-    private int _sequence;
-    private int Sequence => _sequence += 1;
+    @code {
 
     public List<DynamicDictionary> Orders = new List<DynamicDictionary>() { };
     protected override void OnInitialized()
@@ -50,44 +29,16 @@
             return d;
         }).Cast<DynamicDictionary>().ToList<DynamicDictionary>();
     }
-    public class DynamicDictionary : System.Dynamic.DynamicObject
+
+    private JObject TableData { get; set; }
+    private string Path { get; set; }
+
+    private async void OnFileInput(InputFileChangeEventArgs e)
     {
-        Dictionary<string, object> dictionary = new Dictionary<string, object>();
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
-        {
-            string name = binder.Name;
-            return dictionary.TryGetValue(name, out result);
-        }
-        public override bool TrySetMember(SetMemberBinder binder, object value)
-        {
-            dictionary[binder.Name] = value;
-            return true;
-        }
-    //The GetDynamicMemberNames method of DynamicObject class must be overridden and return the property names to perform data operation and editing while using DynamicObject.
-        public override System.Collections.Generic.IEnumerable<string> GetDynamicMemberNames()
-        {
-            return this.dictionary?.Keys;
-        }
-    }
-
-    private RenderFragment BuildTable()
-    // protected override void OnInitialized()
-    {
-        var a = new List<JObject>();
-        a.Add(TableData);
-
-        RenderTreeBuilder Table2;
-        return t =>
-        {
-            t.OpenComponent(Sequence, typeof(SfGrid<DynamicDictionary>)); // 1
-            t.AddAttribute(Sequence, "DataSource", Orders);
-            t.OpenComponent(Sequence, typeof(GridColumns)); // 2
-    // t.OpenComponent(Sequence, typeof(GridColumn)); // 3
-    // t.AddAttribute(Sequence, "HeaderText","A");
-
-    // t.CloseComponent(); // 3
-            t.CloseComponent(); // 2
-            t.CloseComponent(); // 1
-        };
+        Path = await FileWriter.Json(e.File);
+        var content = FileReader.Json(Path);
+        var obj = JsonConverter.ConvertJsonStringToObject<JObject>(content);
+        TableData = obj;
+        StateHasChanged();
     }
 }

@@ -1,0 +1,25 @@
+@using DynamicTest.Core.Models
+<SfGrid
+    DataSource="@Data"
+    ShowColumnChooser="true"
+    FrozenColumns="1"
+    EnableHover="true"
+    Toolbar="@(new List<string>() {"Search", "ColumnChooser"})"
+    AllowPaging="true"
+    AllowTextWrap="true"
+    AllowFiltering="true"
+    AllowPdfExport="true"
+    AllowSorting="true">
+    <GridFilterSettings Type="FilterType.Excel"></GridFilterSettings>
+    <GridPageSettings PageSize="25"></GridPageSettings>
+    <GridColumns>
+        @foreach (var memberName in Data.First().GetDynamicMemberNames())
+        {
+            <GridColumn Field=@memberName></GridColumn>
+        }
+    </GridColumns>
+</SfGrid>
+
+@code {
+    [Parameter] public List<DynamicDictionary> Data { get; set; }
+}

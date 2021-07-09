@@ -1,72 +1,20 @@
 @using Newtonsoft.Json.Linq
 @using System.Dynamic
+@using DynamicTest.Core.Models
 @using Microsoft.AspNetCore.Components.Rendering
-<h3>TableGenerator</h3>
-@BuildTable()
+
+
+<div class="col-lg-12 control-section">
+    <div class="content-wrapper">
+        <div class="data-table">
+            <GridGenerator Data="@Data"></GridGenerator>
+        </div>
+    </div>
+</div>
+
+
 
 @code {
-    [Parameter] public JObject TableData { get; set; }
-
-    private RenderFragment Table { get; set; }
-
-    private int _sequence;
-    private int Sequence => _sequence += 1;
-
-    public List<DynamicDictionary> Orders = new List<DynamicDictionary>() { };
-    protected override void OnInitialized()
-    {
-        Orders = Enumerable.Range(1, 75).Select((x) =>
-        {
-            dynamic d = new DynamicDictionary();
-            d.OrderID = 1000 + x;
-            d.CustomerID = (new string[] { "ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID" })[new Random().Next(5)];
-            d.Freight = (new double[] { 2, 1, 4, 5, 3 })[new Random().Next(5)] * x;
-            d.OrderDate = (new DateTime[] { new DateTime(2010, 11, 5), new DateTime(2018, 10, 3), new DateTime(1995, 9, 9), new DateTime(2012, 8, 2), new DateTime(2015, 4, 11) })[new Random().Next(5)];
-            d.ShipCountry = (new string[] { "USA", "UK" })[new Random().Next(2)];
-            d.Verified = (new bool[] { true, false })[new Random().Next(2)];
-            return d;
-        }).Cast<DynamicDictionary>().ToList<DynamicDictionary>();
-    }
-    public class DynamicDictionary : System.Dynamic.DynamicObject
-    {
-        Dictionary<string, object> dictionary = new Dictionary<string, object>();
-        public override bool TryGetMember(GetMemberBinder binder, out object result)
-        {
-            string name = binder.Name;
-            return dictionary.TryGetValue(name, out result);
-        }
-        public override bool TrySetMember(SetMemberBinder binder, object value)
-        {
-            dictionary[binder.Name] = value;
-            return true;
-        }
-    //The GetDynamicMemberNames method of DynamicObject class must be overridden and return the property names to perform data operation and editing while using DynamicObject.
-        public override System.Collections.Generic.IEnumerable<string> GetDynamicMemberNames()
-        {
-            return this.dictionary?.Keys;
-        }
-    }
-    
-    private RenderFragment BuildTable()
-    // protected override void OnInitialized()
-    {
-        var a = new List<JObject>();
-        a.Add(TableData);
-
-        void Table2(RenderTreeBuilder t)
-        {
-            t.OpenComponent(Sequence, typeof(SfGrid<DynamicDictionary>)); // 1
-            t.AddAttribute(Sequence, "DataSource", Orders);
-            // t.OpenComponent(Sequence, typeof(GridColumns)); // 2
-    // t.OpenComponent(Sequence, typeof(GridColumn)); // 3
-    // t.AddAttribute(Sequence, "HeaderText","A");
-
-    // t.CloseComponent(); // 3
-            // t.CloseComponent(); // 2
-            t.CloseComponent(); // 1
-        }
-
-        return Table2;
-    }
-
+    [Parameter] public List<DynamicDictionary> Data { get; set; }
+    [Parameter] public bool InitializeTable { get; set; }
 }
