@@ -4,7 +4,7 @@ using Newtonsoft.Json.Linq;
 
 namespace DynamicTest.Core.Converter
 {
-    public static class JsonConverter
+    public static class JObjectConverter
     {
         /*private static List<object> RecursiveArrayConverter(dynamic obj)
         {
@@ -48,11 +48,11 @@ namespace DynamicTest.Core.Converter
             return obj.GetType() == typeof(JArray);
         }
 
-        public static T ConvertJsonStringToObject<T>(string jsonString) where T : JContainer
+        public static JObject ConvertJsonStringToObject(string jsonString)
         {
             try
             {
-                var obj = JsonConvert.DeserializeObject<T>(jsonString);
+                var obj = JsonConvert.DeserializeObject<JObject>(jsonString);
                 return obj;
             }
             catch (Exception)
@@ -61,19 +61,19 @@ namespace DynamicTest.Core.Converter
             }
         }
 
-        public static T ConvertJsonStringToObject<T>(string json, string json2) where T : JContainer
-        {
-            try
-            {
-                var obj = JsonConvert.DeserializeObject<T>(json);
-                var obj2 = JsonConvert.DeserializeObject<T>(json2);
-                if (obj2 != null) obj?.Merge(obj2);
-                return obj;
-            }
-            catch (Exception)
-            {
-                return default;
-            }
-        }
+        // public static JObject ConvertJsonStringToObject(string json)
+        // {
+        //     try
+        //     {
+        //         var obj = JsonConvert.DeserializeObject<JObject>(json);
+        //         // var obj2 = JsonConvert.DeserializeObject<JObject>(json2);
+        //         // if (obj2 != null) obj?.Merge(obj2);
+        //         return obj;
+        //     }
+        //     catch (Exception)
+        //     {
+        //         return default;
+        //     }
+        // }
     }
 }

@@ -3,23 +3,37 @@ using System.Dynamic;
 
 namespace DynamicTest.Core.Models
 {
-    public class DynamicDictionary : System.Dynamic.DynamicObject
+    public class DynamicDictionary : DynamicObject
     {
-        Dictionary<string, object> dictionary = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> _dictionary = new();
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            string name = binder.Name;
-            return dictionary.TryGetValue(name, out result);
+            var name = binder.Name;
+            return _dictionary.TryGetValue(name, out result);
         }
         public override bool TrySetMember(SetMemberBinder binder, object value)
         {
-            dictionary[binder.Name] = value;
+            _dictionary[binder.Name] = value;
             return true;
         }
         //The GetDynamicMemberNames method of DynamicObject class must be overridden and return the property names to perform data operation and editing while using DynamicObject.
         public override IEnumerable<string> GetDynamicMemberNames()
         {
-            return dictionary?.Keys;
+            return _dictionary?.Keys;
+        }
+        
+        public override bool TrySetIndex(
+            SetIndexBinder binder, object[] indexes, object value)
+        {
+            string index = (string)indexes[0];
+
+            // If a corresponding property already exists, set the value.
+            if (_dictionary.ContainsKey("Property" + index))
+                _dictionary["Property" + index] = value;
+            else
+                // If a corresponding property does not exist, create it.
+                _dictionary.Add("Property" + index, value);
+            return true;
         }
     }
 }

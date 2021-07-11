@@ -37,8 +37,11 @@
     {
         Path = await FileWriter.Json(e.File);
         var content = FileReader.Json(Path);
-        var obj = JsonConverter.ConvertJsonStringToObject<JObject>(content);
+        var obj = JObjectConverter.ConvertJsonStringToObject(content);
         TableData = obj;
+        
+        var a = DynamicDictionaryConverter.GetDynamicDictionary(TableData);
+        
         StateHasChanged();
     }
 }
