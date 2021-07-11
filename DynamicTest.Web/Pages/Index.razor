@@ -14,20 +14,20 @@
 <InputFile OnChange="OnFileInput"/>
     @code {
 
-    public List<DynamicDictionary> Orders = new List<DynamicDictionary>() { };
+        public List<DynamicDictionary> Orders = new ();
     protected override void OnInitialized()
     {
-        Orders = Enumerable.Range(1, 75).Select((x) =>
+        for (int i = 0; i < 100; i++)
         {
             dynamic d = new DynamicDictionary();
-            d.OrderID = 1000 + x;
-            d.CustomerID = (new string[] { "ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID" })[new Random().Next(5)];
-            d.Freight = (new double[] { 2, 1, 4, 5, 3 })[new Random().Next(5)] * x;
-            d.OrderDate = (new DateTime[] { new DateTime(2010, 11, 5), new DateTime(2018, 10, 3), new DateTime(1995, 9, 9), new DateTime(2012, 8, 2), new DateTime(2015, 4, 11) })[new Random().Next(5)];
-            d.ShipCountry = (new string[] { "USA", "UK" })[new Random().Next(2)];
-            d.Verified = (new bool[] { true, false })[new Random().Next(2)];
-            return d;
-        }).Cast<DynamicDictionary>().ToList<DynamicDictionary>();
+            d["OrderID"] = 1000 + i;
+            d["CustomerID"] = (new string[] {"ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID"})[new Random().Next(5)];
+            d["Freight"] = (new double[] {2, 1, 4, 5, 3})[new Random().Next(5)] * i;
+            d["OrderDate"] = (new DateTime[] {new DateTime(2010, 11, 5), new DateTime(2018, 10, 3), new DateTime(1995, 9, 9), new DateTime(2012, 8, 2), new DateTime(2015, 4, 11)})[new Random().Next(5)];
+            d["ShipCountry"] = (new string[] {"USA", "UK"})[new Random().Next(2)];
+            d["Verified"] = (new bool[] {true, false})[new Random().Next(2)];
+            Orders.Add(d);
+        }
     }
 
     private JObject TableData { get; set; }
