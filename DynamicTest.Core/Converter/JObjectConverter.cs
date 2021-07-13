@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
+using DynamicTest.Core.Helper;
+using DynamicTest.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -61,19 +64,23 @@ namespace DynamicTest.Core.Converter
             }
         }
 
-        // public static JObject ConvertJsonStringToObject(string json)
-        // {
-        //     try
-        //     {
-        //         var obj = JsonConvert.DeserializeObject<JObject>(json);
-        //         // var obj2 = JsonConvert.DeserializeObject<JObject>(json2);
-        //         // if (obj2 != null) obj?.Merge(obj2);
-        //         return obj;
-        //     }
-        //     catch (Exception)
-        //     {
-        //         return default;
-        //     }
-        // }
+        public static JObject ConvertJsonStringToObject(List<string> paths)
+        {
+            var headObj = new JObject();
+            try
+            {
+                foreach (var path in paths)
+                {
+                    var content = FileReader.Json(path);
+                    var obj = JsonConvert.DeserializeObject<JObject>(content);
+                    headObj.Merge(obj ?? new JObject());
+                }
+                return headObj;
+            }
+            catch (Exception)
+            {
+                return default;
+            }
+        }
     }
 }

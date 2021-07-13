@@ -5,42 +5,30 @@
 @using DynamicTest.Web.Components;
 @using System.ComponentModel
 @using System.Dynamic
+@using System.IO
 @using System.Net
 @using DynamicTest.Core.Models
 @using Microsoft.AspNetCore.Components.Rendering
+@using Syncfusion.Blazor.Inputs
 
-    <TableGenerator Data="@Orders"></TableGenerator>
+<LoadFiles OnFilesInput="@OnFileInput"></LoadFiles>
 
-<InputFile OnChange="OnFileInput"/>
-    @code {
+@if (_data.Count > 0)
+{
+    <TableGenerator Data="@_data"></TableGenerator>
+}
 
-        public List<DynamicDictionary> Orders = new ();
-    protected override void OnInitialized()
+
+
+@code {
+
+    private Dictionary<string,List<DynamicDictionary>> _data = new ();
+
+    private async void OnFileInput(List<string> filePaths)
     {
-        for (int i = 0; i < 100; i++)
-        {
-            dynamic d = new DynamicDictionary();
-            d["OrderID"] = 1000 + i;
-            d["CustomerID"] = (new string[] {"ALFKI", "ANANTR", "ANTON", "BLONP", "BOLID"})[new Random().Next(5)];
-            d["Freight"] = (new double[] {2, 1, 4, 5, 3})[new Random().Next(5)] * i;
-            d["OrderDate"] = (new DateTime[] {new DateTime(2010, 11, 5), new DateTime(2018, 10, 3), new DateTime(1995, 9, 9), new DateTime(2012, 8, 2), new DateTime(2015, 4, 11)})[new Random().Next(5)];
-            d["ShipCountry"] = (new string[] {"USA", "UK"})[new Random().Next(2)];
-            d["Verified"] = (new bool[] {true, false})[new Random().Next(2)];
-            Orders.Add(d);
-        }
-    }
-
-    private JObject TableData { get; set; }
-    private string Path { get; set; }
-
-    private async void OnFileInput(InputFileChangeEventArgs e)
-    {
-        Path = await FileWriter.Json(e.File);
-        var content = FileReader.Json(Path);
-        var obj = JObjectConverter.ConvertJsonStringToObject(content);
-        TableData = obj;
-        
-        var a = DynamicDictionaryConverter.GetDynamicDictionary(TableData);
+            var obj = JObjectConverter.ConvertJsonStringToObject(filePaths);
+                
+            _data = DynamicDictionaryConverter.GetDynamicDictionaryList(obj);
         
         StateHasChanged();
     }

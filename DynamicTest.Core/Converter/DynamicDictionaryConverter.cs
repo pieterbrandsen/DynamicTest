@@ -16,55 +16,97 @@ namespace DynamicTest.Core.Converter
             Array
         }
 
-
-        private static DynamicDictionary RecursiveDynamicDictionary(object data, ObjectTypes objType, string parentKey = null)
+        private static DynamicDictionary DynamicDictionaryCreator(JObject data)
         {
             dynamic d = new DynamicDictionary();
-
-            var dataType = data.GetType();
-            var propertyNameList = dataType.GetProperties().Select(s=>s.Name).ToList();
-            
-            foreach (var name in propertyNameList)
+            foreach (var (key, value) in data)
             {
-                var value = dataType.GetProperty(name).GetValue(data);
-                var valueType = JObjectConverter.ObjectIsJsonObject(value)
-                    ? ObjectTypes.Object
-                    : JObjectConverter.ObjectIsJsonArray(value)
-                        ? ObjectTypes.Array
-                        : ObjectTypes.Value;
-
-                if (valueType == ObjectTypes.Object)
-                {
-                    d[name] = RecursiveDynamicDictionary(value, objType);
-                }
-                else if (valueType == ObjectTypes.Array)
-                {
-                    d[name] = RecursiveDynamicDictionary(value, objType);
-                }
-                else
-                {
-                    d.a = "a";
-                    d[name] = value;
-                }
+                // var valueType = JObjectConverter.ObjectIsJsonObject(value)
+                //     ? ObjectTypes.Object
+                //     : JObjectConverter.ObjectIsJsonArray(value)
+                //         ? ObjectTypes.Array
+                //         : ObjectTypes.Value;
+                    d[key] = value;
             }
-
-            return d as DynamicDictionary;
+        
+            return d;
+        }
+        
+        private static DynamicDictionary DynamicDictionaryCreator(JArray data, string key)
+        {
+            dynamic d = new DynamicDictionary();
+            d[key] = data;
+            
+            return d;
+        }
+        
+        private static DynamicDictionary DynamicDictionaryCreator(JValue data, string key)
+        {
+            dynamic d = new DynamicDictionary();
+            d[key] = data;
+            
+            return d;
         }
 
-    public static List<DynamicDictionary> GetDynamicDictionary(JObject data)
+    public static Dictionary<string,List<DynamicDictionary>> GetDynamicDictionaryList(JObject data)
     {
-        var dictionaryList = new List<DynamicDictionary>();
-            foreach (var item in data)
-            {
-                var valueType = JObjectConverter.ObjectIsJsonObject(item.Value)
-                    ? ObjectTypes.Object
-                    : JObjectConverter.ObjectIsJsonArray(item.Value)
-                        ? ObjectTypes.Array : ObjectTypes.Value;
+        var dictionary = new Dictionary<string, List<DynamicDictionary>>();
 
-                dictionaryList.Add(RecursiveDynamicDictionary(item.Value, valueType, item.Key));
+        foreach (var (key,value) in data)
+        {
+            var dictionaryList = new List<DynamicDictionary>();
+            var valueType = JObjectConverter.ObjectIsJsonObject(value)
+                ? ObjectTypes.Object
+                : JObjectConverter.ObjectIsJsonArray(value)
+                    ? ObjectTypes.Array : ObjectTypes.Value;
+            
+            if (valueType == ObjectTypes.Object)
+            {
+                foreach (var (keyOfValue, valueOfValue) in (JObject) value)
+                {
+                    valueType = JObjectConverter.ObjectIsJsonObject(valueOfValue)
+                        ? ObjectTypes.Object
+                        : JObjectConverter.ObjectIsJsonArray(valueOfValue)
+                            ? ObjectTypes.Array : ObjectTypes.Value;
+
+                    if (valueType == ObjectTypes.Object)
+                    {
+                        dictionaryList.Add(DynamicDictionaryCreator(valueOfValue as JObject));
+                    }
+                    else if (valueType == ObjectTypes.Array)
+                    {
+                        dictionaryList.Add(DynamicDictionaryCreator(valueOfValue as JArray, keyOfValue));
+                    }
+                }
+            }
+            else if (valueType == ObjectTypes.Array)
+            {
+                foreach (var itemOfValue in (JArray) value)
+                {
+                    valueType = JObjectConverter.ObjectIsJsonObject(itemOfValue)
+                        ? ObjectTypes.Object
+                        : JObjectConverter.ObjectIsJsonArray(itemOfValue)
+                            ? ObjectTypes.Array : ObjectTypes.Value;
+
+                    if (valueType == ObjectTypes.Object)
+                    {
+                        dictionaryList.Add(DynamicDictionaryCreator(itemOfValue as JObject));
+                    }
+                    // else if (valueType == ObjectTypes.Array)
+                    // {
+                    //     dictionaryList.Add(DynamicDictionaryCreator(item as JArray));
+                    // }
+                    else if (valueType == ObjectTypes.Value)
+                    {
+                        dictionaryList.Add(DynamicDictionaryCreator(itemOfValue as JValue, key));
+                    }
+                }
             }
             
-            return dictionaryList;
+            dictionary.Add(key, dictionaryList);
+        }
+            
+            return dictionary;
         }
     }
 }
