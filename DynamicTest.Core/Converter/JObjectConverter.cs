@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using DynamicTest.Core.Helper;
 using DynamicTest.Core.Models;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Syncfusion.Blazor.Inputs;
 
 namespace DynamicTest.Core.Converter
 {
@@ -64,16 +66,17 @@ namespace DynamicTest.Core.Converter
             }
         }
 
-        public static JObject ConvertJsonStringToObject(List<string> paths)
+        public static JObject ConvertJsonStringToObject(Dictionary<string,UploadFiles> paths)
         {
             var headObj = new JObject();
             try
             {
                 foreach (var path in paths)
                 {
-                    var content = FileReader.Json(path);
+                    var content = FileReader.Json(path.Value);
                     var obj = JsonConvert.DeserializeObject<JObject>(content);
                     headObj.Merge(obj ?? new JObject());
+                    headObj.
                 }
                 return headObj;
             }

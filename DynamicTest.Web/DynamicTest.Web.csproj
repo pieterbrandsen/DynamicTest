@@ -10,7 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="bootstrap" Version="5.0.2" />
-    <PackageReference Include="Syncfusion.Blazor.Grid" Version="19.2.0.46" />
+    <PackageReference Include="Syncfusion.Blazor.Grid" Version="19.2.0.47" />
+    <PackageReference Include="Syncfusion.Blazor.Navigations" Version="19.2.0.47" />
   </ItemGroup>
 
 </Project>

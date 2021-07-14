@@ -10,8 +10,9 @@
 @using DynamicTest.Core.Models
 @using Microsoft.AspNetCore.Components.Rendering
 @using Syncfusion.Blazor.Inputs
+@using FileInfo = System.IO.FileInfo
 
-<LoadFiles OnFilesInput="@OnFileInput"></LoadFiles>
+<LoadFiles OnFilesRemove="@OnFilesRemove" OnFilesInput="@OnFilesInput"></LoadFiles>
 
 @if (_data.Count > 0)
 {
@@ -23,13 +24,27 @@
 @code {
 
     private Dictionary<string,List<DynamicDictionary>> _data = new ();
-
-    private async void OnFileInput(List<string> filePaths)
+    private readonly Dictionary<string,UploadFiles> _filesDictionary = new();
+    
+    private void OnFilesInput(UploadChangeEventArgs args)
     {
-            var obj = JObjectConverter.ConvertJsonStringToObject(filePaths);
-                
-            _data = DynamicDictionaryConverter.GetDynamicDictionaryList(obj);
+        foreach (var file in args.Files.FindAll(f=>f.Stream.Length > 0))
+        {
+            _filesDictionary.Add(file.FileInfo.Id, file);
+        }
         
-        StateHasChanged();
+    var obj = JObjectConverter.ConvertJsonStringToObject(_filesDictionary);
+    _data = DynamicDictionaryConverter.GetDynamicDictionaryList(obj);
+    }
+
+    private void OnFilesRemove(RemovingEventArgs args)
+    {
+        foreach (var file in args.FilesData)
+        {
+            _filesDictionary.Remove(file.Id);
+        }
+        
+        var obj = JObjectConverter.ConvertJsonStringToObject(_filesDictionary);
+        _data = DynamicDictionaryConverter.GetDynamicDictionaryList(obj);
     }
 }

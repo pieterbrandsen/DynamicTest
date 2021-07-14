@@ -1,5 +1,6 @@
 @using DynamicTest.Core.Models
 @using System.Dynamic
+@using Syncfusion.Blazor
 <div class="data-table">
 <SfGrid
     DataSource="@Data"
@@ -11,12 +12,12 @@
     AllowTextWrap="true"
     AllowFiltering="true"
     AllowSorting="true">
-    <GridFilterSettings Type="FilterType.Excel"></GridFilterSettings>
-    <GridPageSettings PageSize="25"></GridPageSettings>
+    <GridFilterSettings Mode="FilterBarMode.Immediate" EnableCaseSensitivity="false"></GridFilterSettings>
+    <GridPageSettings PageSize="10"></GridPageSettings>
     <GridColumns>
         @foreach (var memberName in Data.First().GetDynamicMemberNames())
         {
-            <GridColumn Field=@memberName HeaderText=@memberName.Remove(0,8) Width="200"></GridColumn>
+            <GridColumn Field=@memberName HeaderText=@memberName.Remove(0,8) Width="200" FilterSettings="@(new FilterSettings{ Operator = Operator.Contains })"  Type="ColumnType.String"></GridColumn>
         }
     </GridColumns>
 </SfGrid>
@@ -37,15 +38,3 @@
 @code {
     [Parameter] public List<DynamicDictionary> Data { get; set; }
 }
-
-<style>
-    .data-table {
-    width: 80%;
-    max-width: 100%;
-    height: 100px !important;
-        max-height: 100% !important;
-    position: absolute;
-    }
-    .data-table > * {
-    }    
-</style>

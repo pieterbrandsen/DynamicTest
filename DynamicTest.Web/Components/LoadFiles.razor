@@ -5,13 +5,11 @@
 @using System.IO
 
 <div class="control_wrapper">
-        <SfUploader ID="UploadFiles" DropArea=".control-fluid" AllowedExtensions=".json" AutoUpload="false">
-            <UploaderEvents ValueChange="OnChange"></UploaderEvents>
-            @* <UploaderAsyncSettings SaveUrl="https://aspnetmvc.syncfusion.com/services/api/uploadbox/Save" RemoveUrl="https://aspnetmvc.syncfusion.com/services/api/uploadbox/Remove"></UploaderAsyncSettings> *@
+        <SfUploader ID="UploadFiles" DropArea=".control-fluid" AllowedExtensions=".json" AutoUpload="false" MaxFileSize="Double.MaxValue">
+            <UploaderEvents OnRemove="OnFilesRemove" ValueChange="OnFilesInput"></UploaderEvents>
         </SfUploader>
     </div>
 
-@* <InputFile OnChange="OnFileInput"/> *@
 
 <style>
     .control_wrapper {
@@ -22,19 +20,20 @@
 
 
 @code {
-    [Parameter] public EventCallback<List<string>> OnFilesInput { get; set; }
+    // [Parameter] public EventCallback<List<string>> OnFilesInput { get; set; }
+    [Parameter] public EventCallback<UploadChangeEventArgs> OnFilesInput { get; set; }
+    [Parameter] public EventCallback<RemovingEventArgs> OnFilesRemove { get; set; }
     private List<string> FilePaths { get; set; } = new ();
 
-    private async void OnChange(UploadChangeEventArgs args)
-    {
-        foreach (var file in args.Files)
-        {
-            
-            var path = await FileWriter.Json(file);
-            FilePaths.Add(path);
-        }
-
-        await OnFilesInput.InvokeAsync(FilePaths);
-    }
-    
+    // private async void OnChange(UploadChangeEventArgs args)
+    // {
+    //     foreach (var file in args.Files)
+    //     {
+    //         
+    //         var path = await FileWriter.Json(file);
+    //         FilePaths.Add(path);
+    //     }
+    //
+    //     await OnFilesInput.InvokeAsync(FilePaths);
+    // }
 }

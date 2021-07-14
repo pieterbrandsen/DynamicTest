@@ -6,10 +6,23 @@
 
 <div class="col-lg-12 control-section">
     <div class="content-wrapper">
-            @foreach (var (key, value) in Data)
-            {
-                        <GridGenerator Data=@value></GridGenerator>
-            }
+        <SfTab>
+            <TabItems>
+                @foreach (var (key, value) in Data)
+                {
+                    <TabItem>
+                        <ChildContent>
+                            <TabHeader Text=@key></TabHeader>
+                        </ChildContent>
+                        <ContentTemplate>
+                            <div class="tab-content">
+                                <GridGenerator Data=@value></GridGenerator>
+                            </div>
+                        </ContentTemplate>
+                    </TabItem>
+                }
+            </TabItems>
+        </SfTab>
     </div>
 </div>
 

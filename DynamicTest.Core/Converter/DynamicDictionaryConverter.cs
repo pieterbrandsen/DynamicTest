@@ -21,12 +21,7 @@ namespace DynamicTest.Core.Converter
             dynamic d = new DynamicDictionary();
             foreach (var (key, value) in data)
             {
-                // var valueType = JObjectConverter.ObjectIsJsonObject(value)
-                //     ? ObjectTypes.Object
-                //     : JObjectConverter.ObjectIsJsonArray(value)
-                //         ? ObjectTypes.Array
-                //         : ObjectTypes.Value;
-                    d[key] = value;
+                    d[key] = value.ToString();
             }
         
             return d;
@@ -35,7 +30,7 @@ namespace DynamicTest.Core.Converter
         private static DynamicDictionary DynamicDictionaryCreator(JArray data, string key)
         {
             dynamic d = new DynamicDictionary();
-            d[key] = data;
+            d[key] = data.ToString();
             
             return d;
         }
@@ -43,7 +38,7 @@ namespace DynamicTest.Core.Converter
         private static DynamicDictionary DynamicDictionaryCreator(JValue data, string key)
         {
             dynamic d = new DynamicDictionary();
-            d[key] = data;
+            d[key] = data.ToString();
             
             return d;
         }
@@ -69,13 +64,17 @@ namespace DynamicTest.Core.Converter
                         : JObjectConverter.ObjectIsJsonArray(valueOfValue)
                             ? ObjectTypes.Array : ObjectTypes.Value;
 
-                    if (valueType == ObjectTypes.Object)
+                    if (valueType == ObjectTypes.Object && valueOfValue.HasValues)
                     {
                         dictionaryList.Add(DynamicDictionaryCreator(valueOfValue as JObject));
                     }
-                    else if (valueType == ObjectTypes.Array)
+                    else if (valueType == ObjectTypes.Array && valueOfValue.HasValues)
                     {
                         dictionaryList.Add(DynamicDictionaryCreator(valueOfValue as JArray, keyOfValue));
+                    }
+                    else
+                    {
+                        dictionaryList.Add(DynamicDictionaryCreator(valueOfValue as JValue, keyOfValue));
                     }
                 }
             }
@@ -88,14 +87,10 @@ namespace DynamicTest.Core.Converter
                         : JObjectConverter.ObjectIsJsonArray(itemOfValue)
                             ? ObjectTypes.Array : ObjectTypes.Value;
 
-                    if (valueType == ObjectTypes.Object)
+                    if (valueType == ObjectTypes.Object && itemOfValue.HasValues)
                     {
                         dictionaryList.Add(DynamicDictionaryCreator(itemOfValue as JObject));
                     }
-                    // else if (valueType == ObjectTypes.Array)
-                    // {
-                    //     dictionaryList.Add(DynamicDictionaryCreator(item as JArray));
-                    // }
                     else if (valueType == ObjectTypes.Value)
                     {
                         dictionaryList.Add(DynamicDictionaryCreator(itemOfValue as JValue, key));
@@ -103,7 +98,7 @@ namespace DynamicTest.Core.Converter
                 }
             }
             
-            dictionary.Add(key, dictionaryList);
+            if (dictionaryList.Count > 0) dictionary.Add(key, dictionaryList);
         }
             
             return dictionary;
