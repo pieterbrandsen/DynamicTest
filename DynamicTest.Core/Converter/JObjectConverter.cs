@@ -76,7 +76,6 @@ namespace DynamicTest.Core.Converter
                     var content = FileReader.Json(path.Value);
                     var obj = JsonConvert.DeserializeObject<JObject>(content);
                     headObj.Merge(obj ?? new JObject());
-                    headObj.
                 }
                 return headObj;
             }
