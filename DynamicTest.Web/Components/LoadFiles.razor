@@ -1,0 +1,25 @@
+@using Newtonsoft.Json.Linq
+@using DynamicTest.Core.Helper
+@using DynamicTest.Core.Converter
+@using Syncfusion.Blazor.Inputs
+@using System.IO
+
+<div class="control_wrapper">
+        <SfUploader ID="UploadFiles" DropArea=".control-fluid" AllowedExtensions=".json" AutoUpload="false" MaxFileSize="Double.MaxValue">
+            <UploaderEvents OnRemove="OnFilesRemove" ValueChange="OnFilesInput"></UploaderEvents>
+        </SfUploader>
+    </div>
+
+
+<style>
+    .control_wrapper {
+        width: 350px;
+        margin: 0 auto;
+    }
+</style>
+
+
+@code {
+    [Parameter] public EventCallback<UploadChangeEventArgs> OnFilesInput { get; set; }
+    [Parameter] public EventCallback<RemovingEventArgs> OnFilesRemove { get; set; }
+}

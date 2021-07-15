@@ -1,16 +1,16 @@
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Forms;
+using Syncfusion.Blazor.Inputs;
 
 namespace DynamicTest.Core.Helper
 {
     public static class FileReader
     {
-        public static async Task<string> Json(IBrowserFile file)
+        public static string Json(UploadFiles file)
         {
-            await using var stream = file.OpenReadStream(int.MaxValue);
-            using var reader = new StreamReader(stream);
-            var content = await reader.ReadToEndAsync();
+            var content = Encoding.ASCII.GetString(file.Stream.ToArray());
             return content;
         }
 

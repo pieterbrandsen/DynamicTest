@@ -7,6 +7,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="5.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Syncfusion.Blazor.Inputs" Version="19.2.0.46" />
     <PackageReference Include="System.Json" Version="4.7.1" />
   </ItemGroup>
 
