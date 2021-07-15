@@ -43,58 +43,71 @@ namespace DynamicTest.Core.Converter
             return d;
         }
 
-    public static Dictionary<string,List<DynamicDictionary>> GetDynamicDictionaryList(JObject data)
+    public static Dictionary<string,List<DynamicDictionary>> DynamicDictionaryList(JObject data)
     {
         var dictionary = new Dictionary<string, List<DynamicDictionary>>();
 
         foreach (var (key,value) in data)
         {
             var dictionaryList = new List<DynamicDictionary>();
-            var valueType = JObjectConverter.ObjectIsJsonObject(value)
+            var valueType = JObjectConverter.ObjectIsJObject(value)
                 ? ObjectTypes.Object
-                : JObjectConverter.ObjectIsJsonArray(value)
+                : JObjectConverter.ObjectIsJArray(value)
                     ? ObjectTypes.Array : ObjectTypes.Value;
             
-            if (valueType == ObjectTypes.Object)
+            switch (valueType)
             {
-                foreach (var (keyOfValue, valueOfValue) in (JObject) value)
+                case ObjectTypes.Object:
                 {
-                    valueType = JObjectConverter.ObjectIsJsonObject(valueOfValue)
-                        ? ObjectTypes.Object
-                        : JObjectConverter.ObjectIsJsonArray(valueOfValue)
-                            ? ObjectTypes.Array : ObjectTypes.Value;
+                    foreach (var (keyOfValue, valueOfValue) in (JObject) value)
+                    {
+                        valueType = JObjectConverter.ObjectIsJObject(valueOfValue)
+                            ? ObjectTypes.Object
+                            : JObjectConverter.ObjectIsJArray(valueOfValue)
+                                ? ObjectTypes.Array : ObjectTypes.Value;
 
-                    if (valueType == ObjectTypes.Object && valueOfValue.HasValues)
-                    {
-                        dictionaryList.Add(DynamicDictionaryCreator(valueOfValue as JObject));
+                        switch (valueType)
+                        {
+                            case ObjectTypes.Object when valueOfValue.HasValues:
+                                dictionaryList.Add(DynamicDictionaryCreator(valueOfValue as JObject));
+                                break;
+                            case ObjectTypes.Array when valueOfValue.HasValues:
+                                dictionaryList.Add(DynamicDictionaryCreator(valueOfValue as JArray, keyOfValue));
+                                break;
+                            case ObjectTypes.Value:
+                                dictionaryList.Add(DynamicDictionaryCreator(valueOfValue as JValue, keyOfValue));
+                                break;
+                        }
                     }
-                    else if (valueType == ObjectTypes.Array && valueOfValue.HasValues)
-                    {
-                        dictionaryList.Add(DynamicDictionaryCreator(valueOfValue as JArray, keyOfValue));
-                    }
-                    else
-                    {
-                        dictionaryList.Add(DynamicDictionaryCreator(valueOfValue as JValue, keyOfValue));
-                    }
+
+                    break;
                 }
-            }
-            else if (valueType == ObjectTypes.Array)
-            {
-                foreach (var itemOfValue in (JArray) value)
+                case ObjectTypes.Array:
                 {
-                    valueType = JObjectConverter.ObjectIsJsonObject(itemOfValue)
-                        ? ObjectTypes.Object
-                        : JObjectConverter.ObjectIsJsonArray(itemOfValue)
-                            ? ObjectTypes.Array : ObjectTypes.Value;
+                    foreach (var itemOfValue in (JArray) value)
+                    {
+                        valueType = JObjectConverter.ObjectIsJObject(itemOfValue)
+                            ? ObjectTypes.Object
+                            : JObjectConverter.ObjectIsJArray(itemOfValue)
+                                ? ObjectTypes.Array : ObjectTypes.Value;
 
-                    if (valueType == ObjectTypes.Object && itemOfValue.HasValues)
-                    {
-                        dictionaryList.Add(DynamicDictionaryCreator(itemOfValue as JObject));
+                        switch (valueType)
+                        {
+                            case ObjectTypes.Object when itemOfValue.HasValues:
+                                dictionaryList.Add(DynamicDictionaryCreator(itemOfValue as JObject));
+                                break;
+                            case ObjectTypes.Value:
+                                dictionaryList.Add(DynamicDictionaryCreator(itemOfValue as JValue, key));
+                                break;
+                        }
                     }
-                    else if (valueType == ObjectTypes.Value)
-                    {
-                        dictionaryList.Add(DynamicDictionaryCreator(itemOfValue as JValue, key));
-                    }
+
+                    break;
+                }
+                case ObjectTypes.Value:
+                {
+                    dictionaryList.Add(DynamicDictionaryCreator(value as JValue, key));
+                    break;
                 }
             }
             

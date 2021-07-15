@@ -20,20 +20,6 @@
 
 
 @code {
-    // [Parameter] public EventCallback<List<string>> OnFilesInput { get; set; }
     [Parameter] public EventCallback<UploadChangeEventArgs> OnFilesInput { get; set; }
     [Parameter] public EventCallback<RemovingEventArgs> OnFilesRemove { get; set; }
-    private List<string> FilePaths { get; set; } = new ();
-
-    // private async void OnChange(UploadChangeEventArgs args)
-    // {
-    //     foreach (var file in args.Files)
-    //     {
-    //         
-    //         var path = await FileWriter.Json(file);
-    //         FilePaths.Add(path);
-    //     }
-    //
-    //     await OnFilesInput.InvokeAsync(FilePaths);
-    // }
 }

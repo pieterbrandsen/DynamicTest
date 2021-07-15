@@ -33,8 +33,8 @@
             _filesDictionary.Add(file.FileInfo.Id, file);
         }
         
-    var obj = JObjectConverter.ConvertJsonStringToObject(_filesDictionary);
-    _data = DynamicDictionaryConverter.GetDynamicDictionaryList(obj);
+    var obj = JObjectConverter.ConvertFilesToObject(_filesDictionary);
+    _data = DynamicDictionaryConverter.DynamicDictionaryList(obj);
     }
 
     private void OnFilesRemove(RemovingEventArgs args)
@@ -44,7 +44,7 @@
             _filesDictionary.Remove(file.Id);
         }
         
-        var obj = JObjectConverter.ConvertJsonStringToObject(_filesDictionary);
-        _data = DynamicDictionaryConverter.GetDynamicDictionaryList(obj);
+        var obj = JObjectConverter.ConvertFilesToObject(_filesDictionary);
+        _data = DynamicDictionaryConverter.DynamicDictionaryList(obj);
     }
 }
